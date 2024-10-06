@@ -1,0 +1,45 @@
+@startuml
+
+abstract ModelBase {	
+	+ IsObjectChanged : bool
+    + PropertyChanged : event PropertyChangedEventHandler?
+	+ void CleanChangedFlags()
+	# void OnPropertyChanged(string propertyName)
+	# void SetProperty<T>(ref T? property, T? value, [CallerMemberName] string propertyName = "")	
+}
+
+class Game {
+	+ Author : string
+	+ Chapter? StartChapter
+	+ Description : string
+	+ Features : Feature[]
+	+ Genre : string
+	+ Title : string					
+	+ void AddFeature(Feature feature)
+	+ void RemoveFeature(Feature feature)
+}
+
+class Chapter {
+	+ Name : string
+	+ Text : string
+}
+
+class Feature {
+	+ Description : string
+	+ MaxValue : int
+	+ MinValue : int
+	+ Name : string	
+}
+
+Chapter "1" <-- Game : has
+Feature "0..*" <-- Game : has
+ModelBase <|-- Game
+
+Feature --|> ModelBase
+Chapter --|> ModelBase
+
+note "ModelBase is the base class of all other model classes.\nIt provides handling of PropertyChangedEvents and\nthe handling of RoutedPropertyChanged events.\nHowever, associations to the model classes are not shown\nin order to keep the diagramm simpler." as Note_ModelBase
+Note_ModelBase ..> ModelBase
+
+@enduml
+

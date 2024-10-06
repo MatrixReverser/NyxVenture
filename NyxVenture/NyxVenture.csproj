@@ -9,7 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="resources\" />
+    <None Remove="resources\NyxVenture.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="resources\NyxVenture.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

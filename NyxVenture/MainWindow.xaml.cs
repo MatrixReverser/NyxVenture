@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using NyxVenture.datamodel;
+using System.Windows;
 
 namespace NyxVenture
 {
