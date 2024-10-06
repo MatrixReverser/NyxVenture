@@ -1,7 +1,8 @@
 @startuml
 
-abstract ModelBase {	
+abstract ModelBase {	    
 	+ IsObjectChanged : bool
+	+ ModelChanged : event BubbleChangeEventHander? 
     + PropertyChanged : event PropertyChangedEventHandler?
 	+ void CleanChangedFlags()
 	# void OnPropertyChanged(string propertyName)
@@ -31,14 +32,28 @@ class Feature {
 	+ Name : string	
 }
 
+class BubbleChangeEventArgs {
+	+ PathInformation : List<ModelBase>
+	+ PropertyInformation : PropertyChangeEventArgs
+	+ BubbleChangeEventArgs(PropertyChangedEventArgs propertyInformation, ModelBase origin)
+	+ void AddNodeToPath(ModelBase node)
+}
+
+class BubbleChangeEventHandler <<delegate>> {
+	+ void BubbleChangeEventHander(BubbleChangeEventArgs bubbleChangeEvent)
+}
+
+
+
 Chapter "1" <-- Game : has
 Feature "0..*" <-- Game : has
 ModelBase <|-- Game
+ModelBase <|-- Feature
+ModelBase <|-- Chapter
+BubbleChangeEventArgs "1" <-- BubbleChangeEventHandler : reports
+BubbleChangeEventHandler "1" <-- ModelBase : provides
 
-Feature --|> ModelBase
-Chapter --|> ModelBase
-
-note "ModelBase is the base class of all other model classes.\nIt provides handling of PropertyChangedEvents and\nthe handling of RoutedPropertyChanged events.\nHowever, associations to the model classes are not shown\nin order to keep the diagramm simpler." as Note_ModelBase
+note "ModelBase is the base class of all other model classes.\nIt provides handling of PropertyChangedEvents and\nthe handling of RoutedPropertyChanged events." as Note_ModelBase
 Note_ModelBase ..> ModelBase
 
 @enduml

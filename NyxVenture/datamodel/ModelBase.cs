@@ -12,6 +12,7 @@ namespace NyxVenture.datamodel
         public bool IsObjectChanged { get; private set; } = false;
         
         public event PropertyChangedEventHandler? PropertyChanged;
+        public event BubbleChangeEventHander? ModelChanged;
 
         /// <summary>
         /// Constructor of this class
