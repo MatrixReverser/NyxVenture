@@ -7,11 +7,13 @@ namespace NyxVenture.datamodel
     /// The base class for all models. Provides basic functionality in form of the
     /// event handling.
     /// </summary>
-    public class ModelBase : INotifyPropertyChanged
+    public abstract class ModelBase : INotifyPropertyChanged
     {
         public bool IsObjectChanged { get; private set; } = false;
+        public bool IsModelChanged { get; private set; } = false;
         
         public event PropertyChangedEventHandler? PropertyChanged;
+        public event BubbleChangeEventHander? ModelChanged;
 
         /// <summary>
         /// Constructor of this class
@@ -20,17 +22,29 @@ namespace NyxVenture.datamodel
         {
             IsObjectChanged = false;
         }
-        
+
         /// <summary>
         /// Informs all listeners of the PropertyChanged event about a
         /// change of a property
         /// </summary>
-        /// <param name="propertyName">Name of the property</param>
-        protected void OnPropertyChanged(string propertyName)
+        /// <param name="propertyName">Name of the property</param>        
+        protected virtual void OnPropertyChanged(string propertyName)
         {
-            IsObjectChanged = true;            
+            IsObjectChanged = true;
+            IsModelChanged = true;
             PropertyChangedEventArgs args = new PropertyChangedEventArgs(propertyName);
             PropertyChanged?.Invoke(this, args); 
+        }        
+
+        /// <summary>
+        /// Informs all listeners of the ModelChanged event about
+        /// a change of a property in the hierarchy of objects
+        /// </summary>
+        protected virtual void OnModelChanged(BubbleChangeEventArgs args)
+        {
+            IsModelChanged = true;
+            args.AddNodeToPath(this);
+            ModelChanged?.Invoke(args);
         }
 
         /// <summary>
@@ -41,19 +55,56 @@ namespace NyxVenture.datamodel
         protected void SetProperty<T>(ref T? property, T? value, [CallerMemberName] string propertyName = "")
         {
             if (!EqualityComparer<T>.Default.Equals(property, value))
-            {
+            {                
                 property = value;
-                OnPropertyChanged(nameof(property));
+                
+                OnPropertyChanged(propertyName);
+
+                PropertyChangedEventArgs propertyChangedArgs = new PropertyChangedEventArgs(propertyName);
+                OnModelChanged(new BubbleChangeEventArgs(propertyChangedArgs, this));
             }
         }
 
         /// <summary>
-        /// Cleans all changed flags of this object. After calling this method it
-        /// looks like the object and the underlying objects have not been changed
+        /// Registers a model object as a sub object, so that this object is
+        /// informed about changes in the subnode and can bubble the event
         /// </summary>
-        public void CleanChangedFlags()
+        /// <param name="subnode">The subnode to be registered</param>
+        protected void RegisterSubnode(ModelBase subnode)
+        {
+            subnode.ModelChanged += OnModelChanged;            
+        }
+
+        /// <summary>
+        /// Unregisters a model object so that this object is no longer
+        /// informed about changes in the subnode
+        /// </summary>
+        /// <param name="subnode"></param>
+        protected void UnregisterSubnode(ModelBase subnode)
+        {
+            subnode.ModelChanged -= OnModelChanged;
+        }
+
+        /// <summary>
+        /// Cleans the object changed flag of this object. 
+        /// </summary>
+        public void CleanObjectChangedFlag()
         {
             IsObjectChanged = false;
         }
+
+        /// <summary>
+        /// Cleans the model changed flag of this object. 
+        /// </summary>
+        public void CleanModelChangedFlag()
+        {
+            IsModelChanged = false;
+        }
+
+        /// <summary>
+        /// Recursivley cleans all Model changed flags and ObjectChange flags of the
+        /// current object and all its child nodes
+        /// </summary>
+        public abstract void CleanChangedFlags();
     }
 }

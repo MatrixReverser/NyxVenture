@@ -24,5 +24,15 @@
         /// Constructor of the class Feature
         /// </summary>
         public Feature() { }
+
+        /// <summary>
+        /// Recursivley cleans all Model changed flags and ObjectChange flags of the
+        /// current object and all its child nodes
+        /// </summary>
+        public override void CleanChangedFlags()
+        {
+            CleanModelChangedFlag();
+            CleanObjectChangedFlag();
+        }
     }
 }

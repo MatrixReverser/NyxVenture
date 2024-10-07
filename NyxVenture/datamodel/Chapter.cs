@@ -17,5 +17,15 @@
         public string? Name { get => _name; set => SetProperty(ref _name, value); }
         public string? Text { get => _text; set => SetProperty(ref _text, value); }
         #endregion
+
+        /// <summary>
+        /// Recursivley cleans all Model changed flags and ObjectChange flags of the
+        /// current object and all its child nodes
+        /// </summary>
+        public override void CleanChangedFlags()
+        {
+            CleanModelChangedFlag();
+            CleanObjectChangedFlag();
+        }        
     }
 }
