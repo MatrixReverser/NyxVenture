@@ -1,4 +1,6 @@
 using NyxVenture.datamodel;
+using System.ComponentModel;
+using System.Text;
 
 namespace NyxVenture.Test
 {
@@ -9,11 +11,13 @@ namespace NyxVenture.Test
         public void TestStringChangedEvent()
         {
             bool changedEvent = false;
+            PropertyChangedEventArgs? eventArgs = null;
 
             Game game = new Game();
             game.PropertyChanged += (sender, args) =>
             {
                 changedEvent = true;
+                eventArgs = args;
             };
 
             Assert.IsFalse(game.IsObjectChanged);
@@ -23,17 +27,21 @@ namespace NyxVenture.Test
             Assert.IsTrue(game.IsObjectChanged);
             Assert.IsTrue(changedEvent);
             Assert.IsNotNull(game.Title);
+            Assert.IsNotNull(eventArgs);
+            Assert.AreEqual(nameof(game.Title), eventArgs.PropertyName);
         }
 
         [TestMethod]
         public void TestIntChangedEvent()
         {
             bool changedEvent = false;
+            PropertyChangedEventArgs? eventArgs = null;
 
             Feature feature = new Feature();
             feature.PropertyChanged += (sender, args) =>
             {
                 changedEvent = true;
+                eventArgs = args;
             };
 
             Assert.IsFalse(feature.IsObjectChanged);
@@ -43,38 +51,46 @@ namespace NyxVenture.Test
             Assert.IsTrue(feature.IsObjectChanged);
             Assert.IsTrue(changedEvent);
             Assert.AreEqual(-1, feature.MinValue);
+            Assert.IsNotNull(eventArgs);
+            Assert.AreEqual(nameof(feature.MinValue), eventArgs.PropertyName);
         }
 
         [TestMethod]
         public void TestObjectChangedEvent()
         {
             bool changedEvent = false;
+            PropertyChangedEventArgs? eventArgs = null;
 
             Game game = new Game();
             game.PropertyChanged += (sender, args) =>
             {
                 changedEvent = true;
+                eventArgs = args;
             };
 
             Chapter chapter = new Chapter();
             Assert.IsNull(game.StartChapter);
             Assert.IsFalse(game.IsObjectChanged);
 
-            game.StartChapter = chapter;
+            game.SetStartChapter(chapter);
             Assert.AreEqual(chapter, game.StartChapter);
             Assert.IsTrue(game.IsObjectChanged);
             Assert.IsTrue(changedEvent);
+            Assert.IsNotNull(eventArgs);
+            Assert.AreEqual(nameof(game.StartChapter), eventArgs.PropertyName);
         }
 
         [TestMethod]
         public void TestListEvents()
         {
             bool changedEvent = false;
+            PropertyChangedEventArgs? eventArgs = null;
 
             Game game = new Game();
             game.PropertyChanged += (sender, args) =>
             {
                 changedEvent = true;
+                eventArgs = args;
             };
 
             Feature[] features = game.Features;
@@ -91,9 +107,12 @@ namespace NyxVenture.Test
             Assert.AreEqual(feature2, features[1]);
             Assert.IsTrue(game.IsObjectChanged);
             Assert.IsTrue(changedEvent);
+            Assert.IsNotNull(eventArgs);
+            Assert.AreEqual(nameof(game.Features), eventArgs.PropertyName);
 
             game.CleanChangedFlags();
             changedEvent = false;
+            eventArgs = null;
             Assert.IsFalse(game.IsObjectChanged);
 
             game.RemoveFeature(feature1);
@@ -101,6 +120,76 @@ namespace NyxVenture.Test
             Assert.AreEqual(1, features.Length);
             Assert.IsTrue(game.IsObjectChanged);
             Assert.IsTrue(changedEvent);
+            Assert.IsNotNull(eventArgs);
+            Assert.AreEqual(nameof(game.Features), eventArgs.PropertyName);
+        }
+
+        [TestMethod]
+        public void TestObjectBubbleEvents()
+        {
+            bool subnodeChanged = false;
+            BubbleChangeEventArgs? eventArgs = null;
+
+            Game game = new Game();
+            game.ModelChanged += (args) =>
+            {
+                subnodeChanged = true;
+                eventArgs = args;
+            };
+
+            Chapter chapter = new Chapter();
+            game.SetStartChapter(chapter);
+            Assert.IsFalse(subnodeChanged);
+
+            subnodeChanged = false;
+            chapter.Name = "New chapter";
+            Assert.IsTrue(subnodeChanged);
+
+            Assert.IsNotNull(eventArgs);
+            Assert.AreEqual(nameof(chapter.Name), eventArgs.PropertyInformation.PropertyName);
+
+            List<ModelBase> path = eventArgs.PathInformation;
+            Assert.AreEqual(game, path[0]);
+            Assert.AreEqual(chapter, path[1]);
+        }
+
+        [TestMethod]
+        public void TestListBubbleEvents()
+        {
+            bool subnodeChanged = false;
+            BubbleChangeEventArgs? eventArgs = null;
+
+            Game game = new Game();
+            game.ModelChanged += (args) =>
+            {
+                subnodeChanged = true;
+                eventArgs = args;
+            };
+
+            Feature feature = game.CreateFeature();
+            Assert.IsFalse(subnodeChanged);
+
+            feature.Name = "new feature";
+            Assert.IsTrue(subnodeChanged);
+
+            Assert.IsNotNull(eventArgs);
+            Assert.AreEqual(nameof(feature.Name), eventArgs.PropertyInformation.PropertyName);
+
+            List<ModelBase> path = eventArgs.PathInformation;
+            Assert.AreEqual(game, path[0]);
+            Assert.AreEqual(feature, path[1]);
+
+            subnodeChanged = false;
+            eventArgs = null; 
+
+            // features added with the Add.. function must not cause a BubbleEvent
+            Feature health = new Feature();
+            game.AddFeature(health);
+            Assert.IsFalse(subnodeChanged);
+
+            health.Name = "Health";
+            Assert.IsFalse(subnodeChanged);
+            Assert.IsNull(eventArgs);
         }
     }
 }

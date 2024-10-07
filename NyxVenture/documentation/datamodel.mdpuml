@@ -5,8 +5,11 @@ abstract ModelBase {
 	+ ModelChanged : event BubbleChangeEventHander? 
     + PropertyChanged : event PropertyChangedEventHandler?
 	+ void CleanChangedFlags()
+	# void OnModelChanged(BubbleChangeEventArgs args)
 	# void OnPropertyChanged(string propertyName)
+	# void RegisterSubnode(ModelBase node)
 	# void SetProperty<T>(ref T? property, T? value, [CallerMemberName] string propertyName = "")	
+	# void UnregisterSubnode(ModelBase node)
 }
 
 class Game {
@@ -17,7 +20,10 @@ class Game {
 	+ Genre : string
 	+ Title : string					
 	+ void AddFeature(Feature feature)
+	+ Feature CreateFeature()
 	+ void RemoveFeature(Feature feature)
+	+ void RemoveStartChapter()
+	+ void SetStartChapter(Chapter? startChapter)
 }
 
 class Chapter {

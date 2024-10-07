@@ -30,7 +30,7 @@ namespace NyxVenture.datamodel
         /// <param name="node">The model node to be added</param>
         public void AddNodeToPath(ModelBase node)
         {
-            PathInformation.Add(node);
+            PathInformation.Insert(0, node);            
         }
     }
 }
