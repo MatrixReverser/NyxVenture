@@ -18,14 +18,14 @@ namespace NyxVenture.datamodel
 
         public string? Name { get => _name; set => SetProperty(ref _name, value); }
         public string? Description { get => _description; set => SetProperty(ref _description, value); }
-        public KeyValuePair<Feature, int>[] BaseFeaturePoints { get => _baseFeaturePoints.ToArray(); }
+        public KeyValuePair<Feature, int>[] BaseFeaturePoints { get => [.. _baseFeaturePoints]; }
 
         /// <summary>
         /// Constructor of the class CharacterType
         /// </summary>
         public CharacterType()
         {
-            _baseFeaturePoints = new Dictionary<Feature, int>();        
+            _baseFeaturePoints = [];        
         }
 
         /// <summary>
@@ -37,8 +37,8 @@ namespace NyxVenture.datamodel
         {
             int points = -1;
 
-            if (_baseFeaturePoints.ContainsKey(feature))
-                points = _baseFeaturePoints[feature];
+            if (_baseFeaturePoints.TryGetValue(feature, out int value))
+                points = value;
 
             return points;
         }
@@ -53,9 +53,7 @@ namespace NyxVenture.datamodel
         /// <param name="points">points to be set</param>
         public void SetBaseFeaturePoint(Feature feature, int points)
         {
-            if (!_baseFeaturePoints.ContainsKey(feature))
-                _baseFeaturePoints.Add(feature, points);
-            else
+            if (!_baseFeaturePoints.TryAdd(feature, points))
                 _baseFeaturePoints[feature] = points;
 
             OnPropertyChanged(nameof(BaseFeaturePoints));
@@ -67,11 +65,11 @@ namespace NyxVenture.datamodel
         /// <param name="feature">The feature to be removed</param>
         public void RemoveBaseFeaturePoint(Feature feature)
         {
-            if (_baseFeaturePoints.ContainsKey(feature))
-            {
-                _baseFeaturePoints.Remove(feature);
-                OnPropertyChanged(nameof(BaseFeaturePoints));
-            }
+            if (!_baseFeaturePoints.ContainsKey(feature))
+                return;
+            
+            _baseFeaturePoints.Remove(feature);
+            OnPropertyChanged(nameof(BaseFeaturePoints));
         }
 
         /// <summary>

@@ -8,33 +8,29 @@ namespace NyxVenture.datamodel
     /// </summary>
     public class Game : ModelBase
     {
-        #region ------------------------- FIELDS ------------------------------
         private string? _title;
         private string? _description;
         private string? _author;
         private string? _genre;
-        private List<Feature> _features;
-        private List<CharacterType> _characterTypes;
+        private readonly List<Feature> _features;
+        private readonly List<CharacterType> _characterTypes;
         private Chapter? _startChapter;
-        #endregion
-
-        #region ----------------------- PROPERTIES ----------------------------        
+        
         public string? Title { get => _title; set => SetProperty(ref _title, value); }
         public string? Description { get => _description; set => SetProperty(ref _description, value); }
         public string? Author { get => _author; set => SetProperty(ref _author, value); }
         public string? Genre { get => _genre; set => SetProperty(ref _genre, value); }        
         public Chapter? StartChapter { get => _startChapter; }
-        public Feature[] Features { get => _features.ToArray(); }        
-        public CharacterType[] CharacterTypes { get => _characterTypes.ToArray(); }
-        #endregion
-
+        public Feature[] Features { get => [.. _features]; }        
+        public CharacterType[] CharacterTypes { get => [.. _characterTypes]; }
+        
         /// <summary>
         /// Constructor of this class
         /// </summary>
         public Game() 
         { 
-            _features = new List<Feature>();
-            _characterTypes = new List<CharacterType>();
+            _features = [];
+            _characterTypes = [];
         }
 
         /// <summary>
@@ -54,7 +50,7 @@ namespace NyxVenture.datamodel
         /// <returns>The created chapter</returns>
         public Chapter CreateStartChapter()
         {
-            Chapter chapter = new Chapter();
+            Chapter chapter = new();
 
             RegisterSubnode(chapter);
             SetStartChapter(chapter);
@@ -90,7 +86,7 @@ namespace NyxVenture.datamodel
         /// <returns>The created feature</returns>>
         public Feature CreateFeature()
         {
-            Feature feature = new Feature();
+            Feature feature = new();
             
             RegisterSubnode(feature);
             AddFeature(feature);
@@ -123,7 +119,7 @@ namespace NyxVenture.datamodel
         /// <returns>The new CharacterType</returns>
         public CharacterType CreateCharacterType()
         {
-            CharacterType characterType = new CharacterType();
+            CharacterType characterType = new();
 
             RegisterSubnode(characterType);
             AddCharacterType(characterType);
