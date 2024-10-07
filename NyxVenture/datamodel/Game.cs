@@ -13,6 +13,7 @@ namespace NyxVenture.datamodel
         private string? _author;
         private string? _genre;
         private readonly List<Feature> _features;
+        private readonly List<Skill> _skills;
         private readonly List<CharacterType> _characterTypes;
         private Chapter? _startChapter;
         
@@ -22,6 +23,7 @@ namespace NyxVenture.datamodel
         public string? Genre { get => _genre; set => SetProperty(ref _genre, value); }        
         public Chapter? StartChapter { get => _startChapter; }
         public Feature[] Features { get => [.. _features]; }        
+        public Skill[] Skills { get => [.. _skills]; }
         public CharacterType[] CharacterTypes { get => [.. _characterTypes]; }
         
         /// <summary>
@@ -30,6 +32,7 @@ namespace NyxVenture.datamodel
         public Game() 
         { 
             _features = [];
+            _skills = [];
             _characterTypes = [];
         }
 
@@ -103,6 +106,42 @@ namespace NyxVenture.datamodel
             _features.Remove(feature);
             OnPropertyChanged(nameof(Features));
         }
+
+        /// <summary>
+        /// Adds a skill to the skills available in this game
+        /// </summary>
+        /// <param name="skill">The skill to be added</param>
+        public void AddSkill(Skill skill)
+        {
+            _skills.Add(skill);
+            OnPropertyChanged(nameof(Skills));
+        }
+
+        /// <summary>
+        /// Creates a new skill, register it for bubbling event and add it
+        /// to the skills available in this game
+        /// </summary>
+        /// <returns>The created skill</returns>>
+        public Skill CreateSkill()
+        {
+            Skill skill = new();
+
+            RegisterSubnode(skill);
+            AddSkill(skill);
+            return skill;
+        }
+
+        /// <summary>
+        /// Removes a skill that is available in this game
+        /// </summary>
+        /// <param name="skill">The skill to be removed</param>
+        public void RemoveSkill(Skill skill)
+        {
+            UnregisterSubnode(skill);
+            _skills.Remove(skill);
+            OnPropertyChanged(nameof(Skills));
+        }
+
         /// <summary>
         /// Adds a character type to this game
         /// </summary>
@@ -150,9 +189,10 @@ namespace NyxVenture.datamodel
             StartChapter?.CleanChangedFlags();
 
             foreach (Feature feature in Features)
-            {
                 feature.CleanChangedFlags();
-            }
+
+            foreach (Skill skill in Skills)
+                skill.CleanChangedFlags();
         }
     }
 }

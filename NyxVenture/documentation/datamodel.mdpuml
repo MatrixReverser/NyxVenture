@@ -19,13 +19,17 @@ class Game {
 	+ Description : string
 	+ Features : Feature[]
 	+ Genre : string
+	+ Skills : Skill[]
 	+ Title : string		
 	+ AddCharacterType(characterType : CharacterType) : void
 	+ AddFeature(feature : Feature) : void
+	+ AddSkill(skill : Skill) : void
 	+ CreateCharacterType() : CharacterType
 	+ CreateFeature() : Feature
+	+ CreateSkill() : Skill
 	+ RemoveCharacterType(characterType : CharacterType) : void
 	+ RemoveFeature(feature : Feature) : void
+	+ RemoveSkill(skill : Skill) : void
 	+ RemoveStartChapter() : void
 	+ SetStartChapter(startChapter : Chapter?) : void
 }
@@ -36,6 +40,13 @@ class Chapter {
 }
 
 class Feature {
+	+ Description : string
+	+ MaxValue : int
+	+ MinValue : int
+	+ Name : string	
+}
+
+class Skill {
 	+ Description : string
 	+ MaxValue : int
 	+ MinValue : int
@@ -55,25 +66,31 @@ class BubbleChangeEventHandler <<delegate>> {
 
 class CharacterType {
 	+ BaseFeaturePoints : KeyValuePair<Feature, int>[]
+	+ BaseSkillPoints : KeyValuePair<Skill, int>[]
 	+ Description : string
 	+ Name : string
 	+ GetBaseFeaturePoint(feature : Feature) : int
-	+ RemoveBaseFeaturePoint(feature : Feature) : void
+	+ GetBaseSkillPoint(skill : Skill) : int
+	+ RemoveBaseFeaturePoint(feature : feature) : void
+	+ RemoveBaseSkillPoint(skill : SKill) : void
 	+ SetBaseFeaturePoint(feature : Feature, points : int) : void
+	+ SetBaseSkillPoint(skill : Skill, points : int) : void
 }
 
 
-
-Chapter "1" <-- Game : has
-CharacterType "1..*" <-- Game : has
-Feature "0..*" <-- Game : has
+BubbleChangeEventArgs "1" <-- BubbleChangeEventHandler : reports
+BubbleChangeEventHandler "1" <-- ModelBase : provides
+Chapter "1" <--o Game : has
+CharacterType "1..*" <--o Game : has
+Feature "0..*" <--o Game : has
 Feature "0..*" <-- CharacterType : assigns base points to
 ModelBase <|-- Game
 ModelBase <|-- Feature
+ModelBase <|-- Skill
 ModelBase <|-- Chapter
 ModelBase <|-- CharacterType
-BubbleChangeEventArgs "1" <-- BubbleChangeEventHandler : reports
-BubbleChangeEventHandler "1" <-- ModelBase : provides
+Skill "0..*" <--o Game : has
+Skill "0..*" <-- CharacterType : assigns base points to
 
 note "ModelBase is the base class of all other model classes.\nIt provides handling of PropertyChangedEvents and\nthe handling of RoutedPropertyChanged events." as Note_ModelBase
 Note_ModelBase ..> ModelBase
