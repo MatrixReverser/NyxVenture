@@ -1,7 +1,4 @@
-﻿using System.Configuration;
-using System.Runtime.Versioning;
-
-namespace NyxVenture.datamodel
+﻿namespace NyxVenture.datamodel
 {
     /// <summary>
     /// The root class of a NyxVenture game

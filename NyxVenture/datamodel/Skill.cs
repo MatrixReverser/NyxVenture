@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace NyxVenture.datamodel
+﻿namespace NyxVenture.datamodel
 {
+    /// <summary>
+    /// This class describes a skill. A skill is the capability to do something,
+    /// meaning a skill is always a verb like swimming, flying, lying, ...
+    /// </summary>
     public class Skill : ModelBase
     {
         private string? _name;
