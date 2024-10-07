@@ -110,7 +110,7 @@ namespace NyxVenture.Test
             Assert.IsNotNull(eventArgs);
             Assert.AreEqual(nameof(game.Features), eventArgs.PropertyName);
 
-            game.CleanChangedFlags();
+            game.CleanObjectChangedFlag();
             changedEvent = false;
             eventArgs = null;
             Assert.IsFalse(game.IsObjectChanged);
@@ -143,6 +143,12 @@ namespace NyxVenture.Test
 
             subnodeChanged = false;
             chapter.Name = "New chapter";
+            Assert.IsFalse(subnodeChanged);
+
+            subnodeChanged = false;
+            eventArgs = null;
+            chapter = game.CreateStartChapter();
+            chapter.Name = "created start chapter";
             Assert.IsTrue(subnodeChanged);
 
             Assert.IsNotNull(eventArgs);
@@ -190,6 +196,25 @@ namespace NyxVenture.Test
             health.Name = "Health";
             Assert.IsFalse(subnodeChanged);
             Assert.IsNull(eventArgs);
+        }
+
+        [TestMethod]
+        public void TestCleanModelChangedFlag()
+        {
+            Game game = new Game();
+            Chapter chapter = game.CreateStartChapter();
+
+            Assert.IsTrue(game.IsModelChanged);
+            Assert.IsTrue(game.IsObjectChanged);
+
+            game.CleanChangedFlags();
+            chapter.Name = "new chapter name";
+            Assert.IsTrue(game.IsModelChanged);
+
+            game.CleanChangedFlags();            
+            Assert.IsFalse(game.IsModelChanged);
+            Assert.IsFalse(game.IsObjectChanged);
+            Assert.IsFalse(chapter.IsObjectChanged);
         }
     }
 }

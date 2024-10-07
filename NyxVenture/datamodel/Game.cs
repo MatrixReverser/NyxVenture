@@ -17,13 +17,13 @@ namespace NyxVenture.datamodel
         private Chapter? _startChapter;
         #endregion
 
-        #region ----------------------- PROPERTIES ----------------------------
+        #region ----------------------- PROPERTIES ----------------------------        
         public string? Title { get => _title; set => SetProperty(ref _title, value); }
         public string? Description { get => _description; set => SetProperty(ref _description, value); }
         public string? Author { get => _author; set => SetProperty(ref _author, value); }
         public string? Genre { get => _genre; set => SetProperty(ref _genre, value); }        
         public Chapter? StartChapter { get => _startChapter; }
-        public Feature[] Features { get => _features.ToArray(); }
+        public Feature[] Features { get => _features.ToArray(); }        
         #endregion
 
         /// <summary>
@@ -35,19 +35,28 @@ namespace NyxVenture.datamodel
         }
 
         /// <summary>
-        /// Sets a new startChapter and registers it for bubble events
+        /// Sets a new startChapter. This is not registered for bubbling events
         /// </summary>
         /// <param name="startChapter"></param>
-        public void SetStartChapter(Chapter? startChapter)
+        public void SetStartChapter(Chapter startChapter)
         {
-            RemoveStartChapter();
+            RemoveStartChapter();                       
+            _startChapter = startChapter;                                
+            OnPropertyChanged(nameof(StartChapter));
+        }
 
-            if (startChapter != null)
-            {
-                _startChapter = startChapter;
-                RegisterSubnode(startChapter);
-                OnPropertyChanged(nameof(StartChapter));
-            }
+        /// <summary>
+        /// Creates a new startChapter and registers it for bubble events
+        /// </summary>
+        /// <returns>The created chapter</returns>
+        public Chapter CreateStartChapter()
+        {
+            Chapter chapter = new Chapter();
+
+            RegisterSubnode(chapter);
+            SetStartChapter(chapter);
+
+            return chapter;
         }
 
         /// <summary>
@@ -58,6 +67,7 @@ namespace NyxVenture.datamodel
             if (_startChapter != null)
                 UnregisterSubnode(_startChapter);
             _startChapter = null;
+            OnPropertyChanged(nameof(StartChapter));
         }
 
         /// <summary>
@@ -74,7 +84,7 @@ namespace NyxVenture.datamodel
         /// Creates a new feature, register it for bubbling event and add it
         /// to the features available in this game
         /// </summary>
-        /// <param name="feature">The feature to be added</param>
+        /// <returns>The created feature</returns>>
         public Feature CreateFeature()
         {
             Feature feature = new Feature();
@@ -90,12 +100,29 @@ namespace NyxVenture.datamodel
         /// </summary>
         /// <param name="feature">The feature to be removed</param>
         public void RemoveFeature(Feature feature)
-        {
-            // TODO: in the bass class, the registering for the BubbleEvents has to be deleted, too!
+        {            
             UnregisterSubnode(feature);
 
             _features.Remove(feature);
             OnPropertyChanged(nameof(Features));
+        }
+
+        /// <summary>
+        /// Recursivley cleans all Model changed flags and ObjectChange flags of the
+        /// current object and all its child nodes
+        /// </summary>
+        public override void CleanChangedFlags()
+        {
+            CleanObjectChangedFlag();
+            CleanModelChangedFlag();
+
+            // child objects
+            StartChapter?.CleanChangedFlags();
+
+            foreach (Feature feature in Features)
+            {
+                feature.CleanChangedFlags();
+            }
         }
     }
 }

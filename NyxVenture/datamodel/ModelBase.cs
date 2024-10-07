@@ -7,9 +7,10 @@ namespace NyxVenture.datamodel
     /// The base class for all models. Provides basic functionality in form of the
     /// event handling.
     /// </summary>
-    public class ModelBase : INotifyPropertyChanged
+    public abstract class ModelBase : INotifyPropertyChanged
     {
         public bool IsObjectChanged { get; private set; } = false;
+        public bool IsModelChanged { get; private set; } = false;
         
         public event PropertyChangedEventHandler? PropertyChanged;
         public event BubbleChangeEventHander? ModelChanged;
@@ -27,9 +28,10 @@ namespace NyxVenture.datamodel
         /// change of a property
         /// </summary>
         /// <param name="propertyName">Name of the property</param>        
-        protected void OnPropertyChanged(string propertyName)
+        protected virtual void OnPropertyChanged(string propertyName)
         {
-            IsObjectChanged = true;            
+            IsObjectChanged = true;
+            IsModelChanged = true;
             PropertyChangedEventArgs args = new PropertyChangedEventArgs(propertyName);
             PropertyChanged?.Invoke(this, args); 
         }        
@@ -38,8 +40,9 @@ namespace NyxVenture.datamodel
         /// Informs all listeners of the ModelChanged event about
         /// a change of a property in the hierarchy of objects
         /// </summary>
-        protected void OnModelChanged(BubbleChangeEventArgs args)
+        protected virtual void OnModelChanged(BubbleChangeEventArgs args)
         {
+            IsModelChanged = true;
             args.AddNodeToPath(this);
             ModelChanged?.Invoke(args);
         }
@@ -83,12 +86,25 @@ namespace NyxVenture.datamodel
         }
 
         /// <summary>
-        /// Cleans all changed flags of this object. After calling this method it
-        /// looks like the object and the underlying objects have not been changed
+        /// Cleans the object changed flag of this object. 
         /// </summary>
-        public void CleanChangedFlags()
+        public void CleanObjectChangedFlag()
         {
             IsObjectChanged = false;
         }
+
+        /// <summary>
+        /// Cleans the model changed flag of this object. 
+        /// </summary>
+        public void CleanModelChangedFlag()
+        {
+            IsModelChanged = false;
+        }
+
+        /// <summary>
+        /// Recursivley cleans all Model changed flags and ObjectChange flags of the
+        /// current object and all its child nodes
+        /// </summary>
+        public abstract void CleanChangedFlags();
     }
 }
