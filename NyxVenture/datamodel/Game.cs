@@ -13,7 +13,8 @@ namespace NyxVenture.datamodel
         private string? _description;
         private string? _author;
         private string? _genre;
-        private List<Feature> _features; 
+        private List<Feature> _features;
+        private List<CharacterType> _characterTypes;
         private Chapter? _startChapter;
         #endregion
 
@@ -24,6 +25,7 @@ namespace NyxVenture.datamodel
         public string? Genre { get => _genre; set => SetProperty(ref _genre, value); }        
         public Chapter? StartChapter { get => _startChapter; }
         public Feature[] Features { get => _features.ToArray(); }        
+        public CharacterType[] CharacterTypes { get => _characterTypes.ToArray(); }
         #endregion
 
         /// <summary>
@@ -32,6 +34,7 @@ namespace NyxVenture.datamodel
         public Game() 
         { 
             _features = new List<Feature>();
+            _characterTypes = new List<CharacterType>();
         }
 
         /// <summary>

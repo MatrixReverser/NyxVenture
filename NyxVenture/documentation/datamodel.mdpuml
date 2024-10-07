@@ -15,6 +15,7 @@ abstract ModelBase {
 class Game {
 	+ Author : string
 	+ Chapter? StartChapter
+	+ CharacterTypes : CharacterType[]
 	+ Description : string
 	+ Features : Feature[]
 	+ Genre : string
@@ -49,9 +50,13 @@ class BubbleChangeEventHandler <<delegate>> {
 	+ void BubbleChangeEventHander(BubbleChangeEventArgs bubbleChangeEvent)
 }
 
+class CharacterType {
+}
+
 
 
 Chapter "1" <-- Game : has
+CharacterType "1..*" <-- Game : has
 Feature "0..*" <-- Game : has
 ModelBase <|-- Game
 ModelBase <|-- Feature
