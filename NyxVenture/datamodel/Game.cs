@@ -93,7 +93,6 @@ namespace NyxVenture.datamodel
             Feature feature = new Feature();
             
             RegisterSubnode(feature);
-
             AddFeature(feature);
             return feature;
         }
@@ -105,9 +104,41 @@ namespace NyxVenture.datamodel
         public void RemoveFeature(Feature feature)
         {            
             UnregisterSubnode(feature);
-
             _features.Remove(feature);
             OnPropertyChanged(nameof(Features));
+        }
+        /// <summary>
+        /// Adds a character type to this game
+        /// </summary>
+        /// <param name="characterType">The character type to add</param>
+        public void AddCharacterType(CharacterType characterType)
+        {
+            _characterTypes.Add(characterType);
+            OnPropertyChanged(nameof(CharacterTypes));
+        }
+
+        /// <summary>
+        /// Creates a new character type for this game
+        /// </summary>
+        /// <returns>The new CharacterType</returns>
+        public CharacterType CreateCharacterType()
+        {
+            CharacterType characterType = new CharacterType();
+
+            RegisterSubnode(characterType);
+            AddCharacterType(characterType);
+            return characterType;
+        }
+
+        /// <summary>
+        /// Removes a CharacterType from this game
+        /// </summary>
+        /// <param name="characterType">The CharacterType to be removed</param>
+        public void RemoveCharacterType(CharacterType characterType)
+        {
+            UnregisterSubnode(characterType);
+            _characterTypes.Remove(characterType);
+            OnPropertyChanged(nameof(CharacterTypes));
         }
 
         /// <summary>
