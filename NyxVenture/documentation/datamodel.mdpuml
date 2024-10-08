@@ -21,12 +21,15 @@ class Game {
 	+ Genre : string
 	+ Skills : Skill[]
 	+ Title : string		
+	+ AddArtifact(artifact : Artifact) : void
 	+ AddCharacterType(characterType : CharacterType) : void
 	+ AddFeature(feature : Feature) : void
 	+ AddSkill(skill : Skill) : void
+	+ CreateArtifact() : Artifact
 	+ CreateCharacterType() : CharacterType
 	+ CreateFeature() : Feature
 	+ CreateSkill() : Skill
+	+ RemoveArtifact(artifact : Artifact) : void
 	+ RemoveCharacterType(characterType : CharacterType) : void
 	+ RemoveFeature(feature : Feature) : void
 	+ RemoveSkill(skill : Skill) : void
@@ -53,6 +56,12 @@ class Skill {
 	+ Name : string	
 }
 
+class Artifact {
+	+ Name : string
+	+ Description : string
+	+ Exhausted : bool
+}
+
 class BubbleChangeEventArgs {
 	+ PathInformation : List<ModelBase>
 	+ PropertyInformation : PropertyChangeEventArgs
@@ -77,7 +86,7 @@ class CharacterType {
 	+ SetBaseSkillPoint(skill : Skill, points : int) : void
 }
 
-
+Artifact "0..*" <--o Game : has
 BubbleChangeEventArgs "1" <-- BubbleChangeEventHandler : reports
 BubbleChangeEventHandler "1" <-- ModelBase : provides
 Chapter "1" <--o Game : has
@@ -89,6 +98,7 @@ ModelBase <|-- Feature
 ModelBase <|-- Skill
 ModelBase <|-- Chapter
 ModelBase <|-- CharacterType
+ModelBase <|-- Artifact
 Skill "0..*" <--o Game : has
 Skill "0..*" <-- CharacterType : assigns base points to
 

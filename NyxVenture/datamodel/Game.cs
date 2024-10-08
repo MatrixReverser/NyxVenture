@@ -12,15 +12,17 @@
         private readonly List<Feature> _features;
         private readonly List<Skill> _skills;
         private readonly List<CharacterType> _characterTypes;
+        private readonly List<Artifact> _artifacts;
         private Chapter? _startChapter;
-        
+
         public string? Title { get => _title; set => SetProperty(ref _title, value); }
         public string? Description { get => _description; set => SetProperty(ref _description, value); }
         public string? Author { get => _author; set => SetProperty(ref _author, value); }
-        public string? Genre { get => _genre; set => SetProperty(ref _genre, value); }        
+        public string? Genre { get => _genre; set => SetProperty(ref _genre, value); }
         public Chapter? StartChapter { get => _startChapter; }
-        public Feature[] Features { get => [.. _features]; }        
+        public Feature[] Features { get => [.. _features]; }
         public Skill[] Skills { get => [.. _skills]; }
+        public Artifact[] Artifacts { get => [.._artifacts]; }
         public CharacterType[] CharacterTypes { get => [.. _characterTypes]; }
         
         /// <summary>
@@ -31,6 +33,7 @@
             _features = [];
             _skills = [];
             _characterTypes = [];
+            _artifacts = [];
         }
 
         /// <summary>
@@ -137,6 +140,41 @@
             UnregisterSubnode(skill);
             _skills.Remove(skill);
             OnPropertyChanged(nameof(Skills));
+        }
+
+        /// <summary>
+        /// Adds an artifact to the artifacts available in this game
+        /// </summary>
+        /// <param name="artifact">The artifact to be added</param>
+        public void AddArtifact(Artifact artifact)
+        {
+            _artifacts.Add(artifact);
+            OnPropertyChanged(nameof(Artifacts));
+        }
+
+        /// <summary>
+        /// Creates a new artifact, register it for bubbling event and add it
+        /// to the Artifacts available in this game
+        /// </summary>
+        /// <returns>The created artifact</returns>>
+        public Artifact CreateArtifact()
+        {
+            Artifact artifact = new();
+
+            RegisterSubnode(artifact);
+            AddArtifact(artifact);
+            return artifact;
+        }
+
+        /// <summary>
+        /// Removes an artifact that is available in this game
+        /// </summary>
+        /// <param name="skill">The artifact to be removed</param>
+        public void RemoveArtifact(Artifact artifact)
+        {
+            UnregisterSubnode(artifact);
+            _artifacts.Remove(artifact);
+            OnPropertyChanged(nameof(Artifacts));
         }
 
         /// <summary>
